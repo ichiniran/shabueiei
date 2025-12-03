@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUT Shabu - Customer Terminal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/menustyle.css}">
+    
+
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo">
+            <img src="/images/logo.png" style="width: 100px; margin-top: 10px;" >
+        </div>
+        <div class="nav-item active">
+            <i class="fas fa-utensils"></i>
+            <span>Menu</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-clipboard-list"></i>
+            <span>My Orders</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-gamepad"></i>
+            <span>Reward</span>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="top-bar">
+            <div class="table-info">
+                <span>โต๊ะ A1</span>
+                <span style="font-size: 16px; color: #666;"><i class="fas fa-user"></i> 4</span>
+            </div>
+
+           
+
+            <div class="header-actions">
+                <div class="timer-badge">
+                    <i class="fas fa-stopwatch"></i> <span id="timer">01:30:15</span>
+                </div>
+                <button class="btn-call" onclick="alert('พนักงานกำลังมาที่โต๊ะครับ')">
+                    <i class="fas fa-bell"></i> Call Staff
+                </button>
+            </div>
+        </header>
+
+        <div class="order-area">
+            
+            <div class="menu-section">
+                <div class="categories">
+                    <button class="cat-pill active">เมนูแนะนำ</button>
+                    <button class="cat-pill">เนื้อสัตว์</button>
+                    <button class="cat-pill">ผัก</button>
+                    <button class="cat-pill">ของทานเล่น</button>
+                    <button class="cat-pill">ของหวาน</button>
+                </div>
+
+                <div class="menu-grid-container">
+                    <div class="menu-grid" id="menuGrid">
+                        
+                        <div th:each="item : ${menuItems}" class="food-card">
+                            <img th:src="@{'/images/' + ${item.imageUrl}}" 
+                                 onerror="this.src='https://placehold.co/200x150?text=No+Image'" 
+                                 class="food-img" 
+                                 th:alt="${item.name}">
+                            
+                            <div class="food-name" th:text="${item.name}">ชื่ออาหาร</div>
+                            
+                            <button class="btn-add" th:onclick="addToCart([[${item.id}]], [[${item.name}]])">
+                                Add
+                            </button>
+                        </div>
+                        </div>
+                </div>
+            </div>
+
+            <aside class="cart-section">
+                <div class="cart-header">
+                    รายการที่เลือก <span id="cartCount">(0)</span>
+                </div>
+                <div class="cart-items" id="cartItems">
+                    </div>
+                <div class="cart-footer">
+                    <button class="btn-confirm" onclick="submitOrder()">ยืนยันการสั่ง</button>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <script>
+        // --- Cart Logic (ใช้แบบ Array ตามที่ออกแบบใหม่) ---
+        let cart = []; 
+
+        // 1. ฟังก์ชันเพิ่มสินค้า (จากปุ่ม Add ในเมนู)
+        function addToCart(id, name) {
+            // แปลง id ให้เป็น string เพื่อความชัวร์ในการเปรียบเทียบ
+            id = id.toString();
+            
+            let existingItem = cart.find(item => item.id === id);
+            
+            if (existingItem) {
+                existingItem.qty++;
+            } else {
+                cart.push({ id: id, name: name, qty: 1 });
+            }
+            renderCart();
+        }
+
+        // 2. ฟังก์ชันปรับจำนวน (สำหรับปุ่ม + - ในตะกร้า)
+        function updateQty(id, change) {
+            let item = cart.find(item => item.id === id);
+            if (item) {
+                item.qty += change;
+                if (item.qty <= 0) {
+                    removeItem(id); // ถ้าเหลือน้อยกว่า 1 ให้ลบออก
+                    return;
+                }
+            }
+            renderCart();
+        }
+
+        // 3. ฟังก์ชันลบรายการ (ถังขยะ)
+        function removeItem(id) {
+            cart = cart.filter(item => item.id !== id);
+            renderCart();
+        }
+
+        // 4. ฟังก์ชันแสดงผลตะกร้า (จุดที่คุณต้องการแก้)
+        function renderCart() {
+            const cartContainer = document.getElementById('cartItems');
+            const cartCountLabel = document.getElementById('cartCount');
+            cartContainer.innerHTML = '';
+            
+            let totalItems = 0;
+
+            if (cart.length === 0) {
+                cartContainer.innerHTML = `<div style="text-align:center; color:#999; margin-top:50px; font-size:14px;">ยังไม่มีรายการ<br>กด Add เพื่อสั่งอาหาร</div>`;
+                cartCountLabel.innerText = `(0)`;
+                return;
+            }
+
+            cart.forEach(item => {
+                totalItems += item.qty;
+
+                const div = document.createElement('div');
+                div.className = 'cart-item'; // Class นี้ต้องมีใน CSS (style.css)
+
+                // *** จุดที่แก้ HTML ตามที่คุณขอครับ ***
+                div.innerHTML = `
+                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-controls">
+                        <button class="btn-qty" onclick="updateQty('${item.id}', -1)">-</button>
+                        <span style="font-weight:bold; width:20px; text-align:center;">${item.qty}</span>
+                        <button class="btn-qty" onclick="updateQty('${item.id}', 1)">+</button>
+                        <i class="fa-solid fa-trash" onclick="removeItem('${item.id}')" style="cursor:pointer; margin-left:15px; color:#c62828;"></i>
+                    </div>
+                `;
+                cartContainer.appendChild(div);
+            });
+
+            cartCountLabel.innerText = `(${totalItems})`;
+        }
+
+        // ฟังก์ชันส่งข้อมูลไปหลังบ้าน (ฉบับแก้ไขสำหรับ Array)
+        function submitOrder() {
+            // 1. เช็คว่ามีของในตะกร้าไหม (เช็คความยาว Array)
+            if (cart.length === 0) {
+                alert("กรุณาเลือกรายการอาหารก่อนครับ");
+                return;
+            }
+
+            // 2. แปลงข้อมูล Array ให้เป็น JSON ที่ Java ต้องการ
+            // ใช้ .map เพื่อดึงไส้ใน (id, qty) ออกมา
+            let orderData = cart.map(item => {
+                return {
+                    id: parseInt(item.id), // ดึง id จากข้างใน item โดยตรง
+                    qty: item.qty
+                };
+            });
+
+            console.log("ข้อมูลที่จะส่ง:", orderData); // เช็คใน Console ดูได้เลย
+
+            // 3. ส่งข้อมูลไปหา Java (เหมือนเดิม)
+            fetch('/api/orders/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                alert("✅ " + data);
+                cart = []; // ล้างตะกร้า (Array)
+                renderCart(); // อัปเดตหน้าจอ
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("❌ เกิดข้อผิดพลาด! (ดูใน Console)");
+            });
+        }
+
+
+
+
+
+        // --- Timer Logic (นาฬิกาจับเวลา) ---
+        let duration = 5415; 
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            setInterval(() => {
+                duration--;
+                if(duration < 0) duration = 0;
+                
+                let h = Math.floor(duration / 3600);
+                let m = Math.floor((duration % 3600) / 60);
+                let s = duration % 60;
+
+                timerEl.innerText = 
+                    `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            }, 1000);
+        }
+
+        startTimer();
+
+        // Interaction for Category pills
+        const pills = document.querySelectorAll('.cat-pill');
+        pills.forEach(pill => {
+            pill.addEventListener('click', function() {
+                pills.forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+    </script>
+</body>
+</html>

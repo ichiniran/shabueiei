@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>จัดการโต๊ะ - SOT Shabu</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="sidebar-left">
+            <div class="brand">
+                <img th:src="@{/images/Group 74.png}" alt="logo" style="width: 100px; height: auto;">
+            </div>
+            
+            <p style="color:#ddd; margin-bottom:10px;">การแจ้งเตือน</p>
+            
+            <div class="noti-card">
+                <div class="noti-header">
+                    <b>B2</b> <span style="font-size:12px; color:#aaa;">1 นาทีที่แล้ว</span>
+                </div>
+                <p>เรียกเก็บเงิน</p>
+                <button class="btn-ack">รับทราบ</button>
+            </div>
+            
+            <div class="noti-card">
+                <div class="noti-header">
+                    <b>B4</b> <span style="font-size:12px; color:#aaa;">1 นาทีที่แล้ว</span>
+                </div>
+                <p>เติมน้ำซุป</p>
+                <button class="btn-ack">รับทราบ</button>
+            </div>
+
+            <div class="bottom-menu">
+                <div class="menu-item active">Table</div>
+                <div class="menu-item">Orders</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="top-bar">จัดการโต๊ะ</div>
+
+            <h3 style="margin-bottom: 20px;">โซน A</h3>
+            <div class="table-grid">
+                <div th:each="table : ${zoneA}" class="table-card" 
+                     th:classappend="${table.status == 'FREE' ? 'green' : (table.status == 'BUSY' ? 'red' : 'dark')}"
+                     onclick="selectTable('[[${table.number}]]', '[[${table.status}]]')"
+                     style="cursor: pointer;">
+                    
+                    <h2 th:text="${table.number}">A1</h2>
+                    
+                    <div th:if="${table.status != 'FREE'}">
+                        <span th:if="${table.alertMsg != null}" th:text="${table.alertMsg}" style="color:#fdd835;"></span>
+                        <span th:if="${table.time != ''}" th:text="${table.time}"></span><br>
+                        <div th:if="${table.pax > 0}" th:text="${table.pax} + ' ท่าน'" style="text-align: center;"></div>
+                    </div>
+
+                    <div th:if="${table.status == 'FREE'}">
+                        <span>ว่าง</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 20px; margin-bottom: 20px;">โซน B</h3>
+            <div class="table-grid">
+                <div th:each="table : ${zoneB}" class="table-card" 
+                     th:classappend="${table.status == 'FREE' ? 'green' : (table.status == 'BUSY' ? 'red' : 'dark')}"
+                     onclick="selectTable('[[${table.number}]]', '[[${table.status}]]')"
+                     style="cursor: pointer;">
+                    
+                     <h2 th:text="${table.number}">B1</h2>
+                     
+                     <div th:if="${table.status == 'ALERT'}">
+                        <div style="font-size:24px; text-align: center;"><i class="fa-solid fa-bell"></i></div>
+                        <div th:text="${table.alertMsg}" style="color:#fdd835;"></div>
+                     </div>
+                     
+                     <div th:if="${table.status == 'FREE'}">
+                        <span>ว่าง</span>
+                     </div>
+                     
+                     <div th:if="${table.status == 'BUSY'}">
+                        <span th:text="${table.time}"></span><br>
+                        <div th:text="${table.pax} + ' ท่าน'" style="text-align: center;"></div>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-right">
+            <div class="right-header">
+                <h2 id="selectedTableNumber">กรุณาเลือกโต๊ะ</h2>
+            </div>
+        
+            <div class="right-body">
+                
+                <div id="empty-state" style="text-align: center; margin-top: 50px; color: #888;">
+                    <i class="fa-solid fa-hand-pointer" style="font-size: 40px; margin-bottom: 10px;"></i>
+                    <p>คลิกที่โต๊ะฝั่งซ้าย<br>เพื่อทำรายการ</p>
+                </div>
+        
+                <div id="booking-form" style="display: none;">
+                    <div class="form-group">
+                        <label>ข้อมูลลูกค้า</label>
+                        <input type="text" class="form-input" placeholder="ชื่อ">
+                        <input type="text" class="form-input" placeholder="เบอร์โทร">
+                    </div>
+        
+                    <div class="form-group">
+                        <label>จำนวนลูกค้า</label>
+                        <div class="counter-box">
+                            <button class="btn-count" onclick="decreaseCount()">-</button>
+                            <span id="pax-count">1</span>
+                            <button class="btn-count" onclick="increaseCount()">+</button>
+                        </div>
+                    </div>
+        
+                    <div class="form-group">
+                        <label>เลือกน้ำซุป (เลือกได้สูงสุด 2 น้ำซุป)</label>
+                        <div class="soup-grid">
+                            <div class="soup-btn" onclick="selectSoup(this)">น้ำใส</div>
+                            <div class="soup-btn" onclick="selectSoup(this)">น้ำดำ</div>
+                            <div class="soup-btn" onclick="selectSoup(this)">ต้มยำ</div>
+                            <div class="soup-btn" onclick="selectSoup(this)">หมาล่า</div>
+                        </div>
+                    </div>
+
+                    <div class="right-footer-action">
+                        <button class="btn-open" onclick="alert('เปิดโต๊ะเรียบร้อย!')">เปิดโต๊ะ</button>
+                        <button class="btn-cancel" onclick="deselectTable()">ยกเลิก</button>
+                    </div>
+                </div>
+
+                <div id="active-table-detail" style="display: none; height: 100%; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                        <span><i class="fa-regular fa-clock"></i> 14:30</span>
+                        <span>เหลือ <b style="color:red;">45</b> นาที</span>
+                    </div>
+
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="font-size: 32px; font-weight: bold;">3 ท่าน</h1>
+                    </div>
+
+                    <label style="margin-bottom: 10px; display: block; font-weight: bold;">น้ำซุป</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <span class="soup-badge">น้ำใส</span>
+                        <span class="soup-badge">ต้มยำ</span>
+                    </div>
+
+                    <div class="bill-footer">
+                        <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; margin-bottom: 15px;">
+                            <span>ยอดรวม</span>
+                            <span>฿ 897.00</span>
+                        </div>
+                        <button class="btn-member">สมาชิก / แลกแต้ม</button>
+                        <button class="btn-checkout">ชำระเงิน</button>
+                        <button class="btn-cancel" onclick="deselectTable()" style="margin-top: 10px;">ปิดหน้าต่าง</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectTable(number, status) {
+            console.log("เลือกโต๊ะ: " + number + ", สถานะ: " + status);
+            
+            // 1. เปลี่ยนหัวข้อ
+            document.getElementById('selectedTableNumber').innerText = number;
+
+            // 2. เตรียม Element
+            let emptyState = document.getElementById('empty-state');
+            let bookingForm = document.getElementById('booking-form');
+            let activeDetail = document.getElementById('active-table-detail');
+
+            // 3. Reset (ซ่อนหมดก่อน)
+            emptyState.style.display = 'none';
+            bookingForm.style.display = 'none';
+            activeDetail.style.display = 'none';
+
+            // 4. เช็คเงื่อนไข
+            if (status.trim() === 'FREE') {
+                // ถ้าว่าง -> โชว์ฟอร์ม
+                bookingForm.style.display = 'block';
+            } else {
+                // ถ้าไม่ว่าง -> โชว์หน้าคิดเงิน
+                activeDetail.style.display = 'flex';
+            }
+        }
+
+        function deselectTable() {
+            document.getElementById('selectedTableNumber').innerText = "กรุณาเลือกโต๊ะ";
+            document.getElementById('empty-state').style.display = 'block';
+            document.getElementById('booking-form').style.display = 'none';
+            document.getElementById('active-table-detail').style.display = 'none';
+        }
+
+        function increaseCount() {
+            let count = document.getElementById('pax-count');
+            count.innerText = parseInt(count.innerText) + 1;
+        }
+    
+        function decreaseCount() {
+            let count = document.getElementById('pax-count');
+            let current = parseInt(count.innerText);
+            if(current > 1) { count.innerText = current - 1; }
+        }
+    
+        function selectSoup(element) {
+            let selected = document.querySelectorAll('.soup-btn.active');
+            if (element.classList.contains('active')) {
+                element.classList.remove('active');
+            } else {
+                if (selected.length < 2) {
+                    element.classList.add('active');
+                } else {
+                    alert("เลือกได้สูงสุด 2 น้ำซุปครับ");
+                }
+            }
+        }
+    </script>
+</body>
+</html>

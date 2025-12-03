@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> <head>
+    <title>ร้านชาบู</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background-color: #f0f0f0; }
+        .box { background: white; padding: 20px; border-radius: 10px; display: inline-block; margin-top: 50px; }
+        h1 { color: #d32f2f; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h1>ยินดีต้อนรับสู่ <span th:text="${shopName}">ชื่อร้านจำลอง</span></h1>
+        
+        <p>ตอนนี้มีโต๊ะว่างทั้งหมด <b th:text="${tables}">0</b> โต๊ะ</p>
+        
+        <button>จองโต๊ะเลย</button>
+    </div>
+
+</body>
+</html>

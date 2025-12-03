@@ -1,0 +1,307 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100..900&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans Thai', sans-serif;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* ===============================
+   CONTAINER
+================================= */
+.container {
+    display: flex;
+    height: 100%;
+    background-color: #fef5c5;
+}
+
+/* ===============================
+   SIDEBAR LEFT
+================================= */
+.sidebar-left {
+    width: 300px;
+    background-color: #2c2c2c;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.brand {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.noti-card {
+    background: white;
+    color: black;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.btn-ack {
+    background: #fdd835;
+    border: none;
+    width: 100%;
+    padding: 5px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.bottom-menu {
+    margin-top: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.menu-item {
+    padding: 10px;
+    text-align: center;
+    color: #888;
+    cursor: pointer;
+    flex: 1;
+}
+
+.menu-item.active {
+    background: #b71c1c;
+    color: white;
+    border-radius: 5px;
+}
+
+/* ===============================
+   MAIN CONTENT
+================================= */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.top-bar {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    color: #c0392b;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.table-grid {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.table-card {
+    width: 180px;
+    height: 150px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.red {
+    background-color: #d32f2f;
+}
+
+.green {
+    background-color: #388e3c;
+}
+
+.dark {
+    background-color: #333333;
+    color: #fdd835;
+}
+
+/* ===============================
+   SIDEBAR RIGHT
+================================= */
+.sidebar-right {
+    width: 320px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #ddd;
+}
+
+.right-header {
+    background: #2c2c2c;
+    color: white;
+    padding: 20px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+}
+
+.right-body {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ===============================
+   FORM STYLES
+================================= */
+.form-group label {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #eee;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    outline: none;
+}
+
+.counter-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-count {
+    width: 35px;
+    height: 35px;
+    background: #ddd;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#pax-count {
+    font-size: 20px;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+}
+
+.soup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.soup-btn {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    background: white;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+.soup-btn.active {
+    border: 2px solid #fdd835;
+    background-color: #fff9c4;
+    font-weight: bold;
+}
+
+/* ===============================
+   FOOTER BUTTONS
+================================= */
+.right-footer-action {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-open {
+    width: 100%;
+    padding: 12px;
+    background-color: #fdd835;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-cancel {
+    width: 100%;
+    padding: 12px;
+    background-color: white;
+    border: 1px solid #fdd835;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-cancel:hover {
+    background-color: #fef5c5;
+}
+
+/* ===============================
+   RIGHT PANEL (BUSY TABLE)
+================================= */
+.soup-badge {
+    background-color: #fdd835;
+    padding: 8px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.bill-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    width: 100%;
+}
+
+.btn-member {
+    width: 100%;
+    padding: 12px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.btn-checkout {
+    width: 100%;
+    padding: 12px;
+    background-color: #fdd835;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
